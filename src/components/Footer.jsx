@@ -30,7 +30,10 @@ export default function Footer() {
           <p><MapPin size={16} /> {company.address}</p>
         </div>
       </div>
-      <div className="footer-bottom">© {new Date().getFullYear()} HA Developers. All rights reserved.</div>
+      <div className="footer-bottom">
+        <span>© {new Date().getFullYear()} HA Developers. All rights reserved.</span>
+        <Link className="powered-link" to="/admin">Powered by HA Developers</Link>
+      </div>
     </footer>
   );
 }

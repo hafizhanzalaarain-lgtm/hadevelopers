@@ -1,6 +1,9 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
+import PageLoader from './components/PageLoader.jsx';
+import ChatBot from './components/ChatBot.jsx';
 import Home from './pages/Home.jsx';
 import About from './pages/About.jsx';
 import Services from './pages/Services.jsx';
@@ -13,8 +16,18 @@ import AdminLogin from './pages/AdminLogin.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
 
 export default function App() {
+  const location = useLocation();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    const timer = window.setTimeout(() => setLoading(false), 520);
+    return () => window.clearTimeout(timer);
+  }, [location.pathname]);
+
   return (
     <div className="app-shell">
+      <PageLoader visible={loading} />
       <Header />
       <main>
         <Routes>
@@ -32,6 +45,7 @@ export default function App() {
         </Routes>
       </main>
       <Footer />
+      <ChatBot />
     </div>
   );
 }
