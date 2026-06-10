@@ -1,16 +1,23 @@
-import { Check } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Check } from "lucide-react";
 
 export default function PricingCard({ plan }) {
+  const [name, monthly, yearly, features] = plan;
   return (
-    <article className={plan.highlighted ? 'pricing-card highlighted' : 'pricing-card'}>
-      <span className="plan-label">{plan.name}</span>
-      <h3>{plan.price}</h3>
-      <p>{plan.description}</p>
+    <article className="pricing-card glass-card">
+      <div>
+        <span className="mini-label">{name}</span>
+        <h3>{monthly}</h3>
+        <p>{yearly} yearly</p>
+      </div>
       <ul>
-        {plan.features?.map((feature) => <li key={feature}><Check size={17} /> {feature}</li>)}
+        {features.map((feature) => (
+          <li key={feature}>
+            <Check size={17} />
+            {feature}
+          </li>
+        ))}
       </ul>
-      <Link className="btn primary full" to={`/order?package=${encodeURIComponent(plan.name)}`}>Order Now</Link>
+      <a className="btn btn-secondary" href="/contact">Request Plan</a>
     </article>
   );
 }

@@ -1,106 +1,89 @@
-import { useMemo, useState } from 'react';
-import { Bot, MessageCircle, Send, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { company, pricingPlans, services } from '../data/seed.js';
+import { Bot, MessageCircle, Send, Sparkles, X } from "lucide-react";
+import { useState } from "react";
+import { company, owner, services } from "../data/seed";
 
-const quickQuestions = [
-  'What services do you offer?',
-  'Website price?',
-  'How can I order?',
-  'Contact number',
-  'IT courses'
-];
-
-function getBotReply(message) {
-  const text = message.toLowerCase();
-
-  if (text.includes('price') || text.includes('pricing') || text.includes('package') || text.includes('cost')) {
-    return `Our packages start from ${pricingPlans[0].price}. Standard is ${pricingPlans[1].price}, Premium is ${pricingPlans[2].price}, and Enterprise is a custom quote. You can open the Pricing page or place an order for an exact quote.`;
+function answerQuestion(input) {
+  const question = input.toLowerCase();
+  if (question.includes("owner") || question.includes("founder") || question.includes("pic") || question.includes("hanzala")) {
+    return `${owner.name} is the ${owner.role} of HA Developers. He focuses on websites, SEO, digital marketing, branding and client growth. You can contact him on WhatsApp at ${company.phone}.`;
   }
-
-  if (text.includes('website') || text.includes('web')) {
-    const service = services.find((item) => item.id === 'website-development');
-    return `${service.title}: ${service.description} Pricing starts ${service.price}. It includes responsive UI, SEO foundations, contact forms, and optional admin/CMS features.`;
+  if (question.includes("price") || question.includes("pricing") || question.includes("cost") || question.includes("rate")) {
+    return "Pricing depends on scope. Websites can start from basic business packages, while SEO, marketing and design packages are customized. Share your service, pages/features and deadline for an accurate quote.";
   }
-
-  if (text.includes('android') || text.includes('app')) {
-    const service = services.find((item) => item.id === 'android-app-development');
-    return `${service.title}: ${service.description} Pricing starts ${service.price}. We can build mobile apps with API integration, notifications, and dashboards.`;
+  if (question.includes("service") || question.includes("website") || question.includes("seo") || question.includes("marketing") || question.includes("design") || question.includes("app")) {
+    return `HA Developers provides ${services.map((service) => service.title).join(", ")}. Tell me which one you need and I will guide you.`;
   }
-
-  if (text.includes('marketing') || text.includes('ads') || text.includes('seo')) {
-    const service = services.find((item) => item.id === 'digital-marketing');
-    return `${service.title}: ${service.description} Pricing starts ${service.price}. We help with campaigns, content strategy, lead generation, and reporting.`;
+  if (question.includes("urdu") || question.includes("arabic") || question.includes("language") || question.includes("زبان") || question.includes("عربي")) {
+    return "Yes, HA Developers can make websites in English, Urdu, Arabic, or bilingual layouts like Urdu + English and Arabic + English. Tell us your preferred website language in the quote form.";
   }
-
-  if (text.includes('graphic') || text.includes('design') || text.includes('logo')) {
-    const service = services.find((item) => item.id === 'graphic-designing');
-    return `${service.title}: ${service.description} Pricing starts ${service.price}. We design logos, brand kits, social posts, and print-ready creatives.`;
+  if (question.includes("contact") || question.includes("whatsapp") || question.includes("phone") || question.includes("call")) {
+    return `You can contact HA Developers on WhatsApp/call: ${company.phone}, or email: ${company.email}.`;
   }
-
-  if (text.includes('course') || text.includes('training') || text.includes('learn') || text.includes('class')) {
-    const service = services.find((item) => item.id === 'it-courses');
-    return `${service.title}: ${service.description} Pricing starts ${service.price}. Courses include live classes, practice projects, certificates, and career guidance.`;
+  if (question.includes("privacy") || question.includes("policy")) {
+    return "You can read the Privacy Policy page from the website footer. We use form data only to respond to project requests and business communication.";
   }
-
-  if (text.includes('order') || text.includes('start') || text.includes('quote')) {
-    return 'To start your project, click Order Now from any service card or open the Order page. Your request will be saved and shown in the admin dashboard.';
+  if (question.includes("time") || question.includes("hours")) {
+    return `Business hours are ${company.hours}. You can still send a WhatsApp message anytime.`;
   }
-
-  if (text.includes('contact') || text.includes('phone') || text.includes('whatsapp') || text.includes('email')) {
-    return `You can contact HA Developers at ${company.phone}, email ${company.email}, or use the WhatsApp button on the Contact page.`;
-  }
-
-  if (text.includes('admin')) {
-    return 'The admin panel is private. Open /admin directly or use the Powered by HA Developers link in the footer.';
-  }
-
-  return 'I can help with HA Developers services, pricing, orders, contact details, IT courses, websites, apps, marketing, and graphic design. You can also submit your project from the Order page.';
+  return "I can help with websites, mobile apps, SEO, digital marketing, graphic design, branding, pricing, owner details, and contact information. Ask me anything about HA Developers.";
 }
 
 export default function ChatBot() {
   const [open, setOpen] = useState(false);
-  const [input, setInput] = useState('');
   const [messages, setMessages] = useState([
-    { from: 'bot', text: 'Hi, I am HA Assistant. Ask me about services, pricing, orders, contact, or IT courses.' }
+    { by: "bot", text: "Hi, I am HA Assistant. Ask me anything about HA Developers." }
   ]);
-  const canSend = useMemo(() => input.trim().length > 0, [input]);
+  const [text, setText] = useState("");
+  const [typing, setTyping] = useState(false);
+  const quickPrompts = ["Owner details", "Website quote", "Urdu/Arabic site", "Contact WhatsApp"];
 
-  function sendMessage(text = input) {
-    const clean = text.trim();
-    if (!clean) return;
-    setMessages((current) => [
-      ...current,
-      { from: 'user', text: clean },
-      { from: 'bot', text: getBotReply(clean) }
-    ]);
-    setInput('');
+  function send() {
+    if (!text.trim() || typing) return;
+    const userText = text.trim();
+    setMessages((items) => [...items, { by: "user", text: userText }]);
+    setText("");
+    setTyping(true);
+    setTimeout(() => {
+      setMessages((items) => [...items, { by: "bot", text: answerQuestion(userText) }]);
+      setTyping(false);
+    }, 700);
   }
 
   return (
-    <div className="chatbot">
-      {open && (
-        <section className="chat-window glass-card" aria-label="HA Developers chatbot">
-          <header className="chat-header">
-            <div className="chat-title"><Bot size={20} /><div><strong>HA Assistant</strong><span>Online support</span></div></div>
-            <button className="icon-btn" aria-label="Close chatbot" onClick={() => setOpen(false)}><X size={18} /></button>
-          </header>
-          <div className="chat-messages">
-            {messages.map((message, index) => <p className={message.from === 'bot' ? 'bot-message' : 'user-message'} key={`${message.from}-${index}`}>{message.text}</p>)}
-          </div>
-          <div className="chat-quick">
-            {quickQuestions.map((question) => <button key={question} onClick={() => sendMessage(question)}>{question}</button>)}
-          </div>
-          <form className="chat-form" onSubmit={(event) => { event.preventDefault(); sendMessage(); }}>
-            <input value={input} onChange={(event) => setInput(event.target.value)} placeholder="Ask about HA Developers..." />
-            <button className="icon-btn" disabled={!canSend} aria-label="Send message" type="submit"><Send size={18} /></button>
-          </form>
-          <Link className="btn primary full" to="/order" onClick={() => setOpen(false)}>Order Now</Link>
-        </section>
-      )}
-      <button className="chat-toggle" aria-label="Open chatbot" onClick={() => setOpen(!open)}>
-        {open ? <X size={22} /> : <MessageCircle size={22} />}
+    <>
+      <a className="whatsapp-float" href={`https://wa.me/${company.whatsapp}`} aria-label="WhatsApp" title="WhatsApp">
+        <MessageCircle size={24} />
+      </a>
+      <button className="chat-float" type="button" aria-label="Open AI assistant" title="AI assistant" onClick={() => setOpen(true)}>
+        <Bot size={24} />
       </button>
-    </div>
+      {open && (
+        <aside className="chat-panel glass-card">
+          <div className="chat-head">
+            <span className="chat-title"><Sparkles size={18} /><strong>HA AI Assistant</strong></span>
+            <button className="icon-button" type="button" aria-label="Close chat" onClick={() => setOpen(false)}>
+              <X size={18} />
+            </button>
+          </div>
+          <div className="chat-chips">
+            {quickPrompts.map((prompt) => (
+              <button key={prompt} type="button" onClick={() => setText(prompt)}>{prompt}</button>
+            ))}
+          </div>
+          <div className="chat-messages">
+            {messages.map((message, index) => (
+              <p className={message.by} key={`${message.by}-${index}`}>{message.text}</p>
+            ))}
+            {typing && <p className="bot typing-dots"><span /> <span /> <span /></p>}
+          </div>
+          <div className="chat-input">
+            <input value={text} onChange={(event) => setText(event.target.value)} onKeyDown={(event) => event.key === "Enter" && send()} placeholder="Ask anything..." />
+            <button className="icon-button" type="button" aria-label="Send message" onClick={send}>
+              <Send size={18} />
+            </button>
+          </div>
+        </aside>
+      )}
+    </>
   );
 }

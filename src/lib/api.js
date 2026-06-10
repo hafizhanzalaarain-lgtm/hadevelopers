@@ -1,40 +1,61 @@
-import { createClient } from '@supabase/supabase-js';
-import { services, pricingPlans, reviews, clients } from '../data/seed.js';
+export async function postLead(payload) {
+  const response = await fetch("/api/leads", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-export const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null;
-
-const fallback = {
-  services,
-  pricing_plans: pricingPlans,
-  reviews,
-  clients
-};
-
-export async function fetchTable(table) {
-  if (!supabase) return fallback[table] || [];
-  const { data, error } = await supabase.from(table).select('*').order('created_at', { ascending: false });
-  if (error) {
-    console.warn(error.message);
-    return fallback[table] || [];
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    throw new Error(data.error || "Unable to submit request");
   }
-  const normalized = table === 'clients'
-    ? data?.map((item) => ({ ...item, projectType: item.projectType || item.project_type }))
-    : data;
-  return normalized?.length ? normalized : fallback[table] || [];
+
+  return response.json();
 }
 
-export async function sendContact(payload) {
-  if (!supabase) return { ok: true };
-  const { error } = await supabase.from('contacts').insert(payload);
-  if (error) throw error;
-  return { ok: true };
+export async function checkDomain(domain) {
+  const response = await fetch(`/api/domain-search?domain=${encodeURIComponent(domain)}`);
+  if (!response.ok) {
+    throw new Error("Unable to check domain");
+  }
+  return response.json();
 }
 
-export async function sendOrder(payload) {
-  if (!supabase) return { ok: true };
-  const { error } = await supabase.from('orders').insert(payload);
-  if (error) throw error;
-  return { ok: true };
+export async function getAdminOverview() {
+  const response = await fetch("/api/admin/overview");
+  if (!response.ok) {
+    throw new Error("Unable to load admin overview");
+  }
+  return response.json();
+}
+
+export async function createAdminRecord(resource, payload) {
+  const response = await fetch(`/api/admin/${resource}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || "Unable to create record");
+  return data;
+}
+
+export async function updateAdminRecord(resource, id, payload) {
+  const response = await fetch(`/api/admin/${resource}/${encodeURIComponent(id)}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || "Unable to update record");
+  return data;
+}
+
+export async function deleteAdminRecord(resource, id) {
+  const response = await fetch(`/api/admin/${resource}/${encodeURIComponent(id)}`, {
+    method: "DELETE"
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || "Unable to delete record");
+  return data;
 }

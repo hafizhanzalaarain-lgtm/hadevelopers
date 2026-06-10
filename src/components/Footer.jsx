@@ -1,38 +1,43 @@
-import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from 'lucide-react';
-import { company } from '../data/seed.js';
+import { Link } from "react-router-dom";
+import { company, navLinks, services } from "../data/seed";
+import { useLanguage } from "../lib/i18n.jsx";
 
 export default function Footer() {
+  const { t } = useLanguage();
   return (
-    <footer className="footer">
+    <footer className="site-footer">
       <div className="footer-grid">
         <div>
-          <div className="brand footer-brand"><span>HA</span><strong>HA Developers</strong></div>
-          <p>Premium websites, Android apps, digital growth, visual branding, and IT training for ambitious businesses.</p>
-          <div className="socials">
-            <a href={company.socials.facebook} aria-label="Facebook"><Facebook size={18} /></a>
-            <a href={company.socials.instagram} aria-label="Instagram"><Instagram size={18} /></a>
-            <a href={company.socials.linkedin} aria-label="LinkedIn"><Linkedin size={18} /></a>
-            <a href={company.socials.youtube} aria-label="YouTube"><Youtube size={18} /></a>
-          </div>
+          <Link className="brand footer-brand" to="/">
+            <img className="brand-logo" src="/logo.png" alt="HA Developers logo" />
+            <strong>HA Developers</strong>
+          </Link>
+          <p>{company.tagline}. Premium websites, apps, SEO, digital marketing, branding, and graphic design for ambitious businesses.</p>
         </div>
         <div>
-          <h3>Company</h3>
-          <Link to="/about">About Us</Link>
-          <Link to="/services">Services</Link>
-          <Link to="/clients">Our Clients</Link>
-          <Link to="/reviews">Reviews</Link>
+          <h3>{t.footer.services}</h3>
+          {services.slice(0, 6).map((service) => (
+            <Link key={service.id} to={`/services/${service.id}`}>{service.title}</Link>
+          ))}
         </div>
         <div>
-          <h3>Contact</h3>
-          <p><Phone size={16} /> {company.phone}</p>
-          <p><Mail size={16} /> {company.email}</p>
-          <p><MapPin size={16} /> {company.address}</p>
+          <h3>{t.footer.company}</h3>
+          {navLinks.slice(1, 7).map((link) => (
+            <Link key={link.path} to={link.path}>{link.label}</Link>
+          ))}
+          <Link to="/privacy-policy">{t.footer.privacy}</Link>
+        </div>
+        <div>
+          <h3>{t.footer.contact}</h3>
+          <a href={`mailto:${company.email}`}>{company.email}</a>
+          <a href={`tel:${company.phone}`}>{company.phone}</a>
+          <a href={`https://wa.me/${company.whatsapp}`}>WhatsApp</a>
+          <p>{company.hours}</p>
         </div>
       </div>
       <div className="footer-bottom">
         <span>© {new Date().getFullYear()} HA Developers. All rights reserved.</span>
-        <Link className="powered-link" to="/admin">Powered by HA Developers</Link>
+        <span>{t.footer.line}</span>
       </div>
     </footer>
   );

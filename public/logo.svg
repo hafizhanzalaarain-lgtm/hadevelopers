@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 180" role="img" aria-labelledby="title">
+  <title id="title">HA Developers</title>
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#ffffff"/>
+      <stop offset=".44" stop-color="#00e5ff"/>
+      <stop offset="1" stop-color="#006dff"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="640" height="180" rx="28" fill="#07111f"/>
+  <g filter="url(#glow)">
+    <path d="M44 130V48h26v30h55V48h26v82h-26V99H70v31H44Z" fill="#ffffff"/>
+    <path d="M174 130 213 48h28l39 82h-31l-7-17h-32l-7 17h-29Zm44-39h16l-8-21-8 21Z" fill="url(#g)"/>
+    <path d="M220 100 247 78 260 105 239 94 221 116Z" fill="#07111f" opacity=".65"/>
+  </g>
+  <text x="310" y="82" fill="url(#g)" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="800" letter-spacing="1">HA DEVELOPERS</text>
+  <text x="311" y="121" fill="#edf7ff" font-family="Arial, Helvetica, sans-serif" font-size="18" letter-spacing="2">TRANSFORMING IDEAS INTO DIGITAL SUCCESS</text>
+</svg>

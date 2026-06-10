@@ -1,15 +1,21 @@
-import { useEffect, useState } from 'react';
-import PricingCard from '../components/PricingCard.jsx';
-import SectionHeading from '../components/SectionHeading.jsx';
-import { fetchTable } from '../lib/api.js';
+import PricingCard from "../components/PricingCard";
+import SectionHeading from "../components/SectionHeading";
+import { pricing } from "../data/seed";
 
 export default function Pricing() {
-  const [plans, setPlans] = useState([]);
-  useEffect(() => { fetchTable('pricing_plans').then(setPlans); }, []);
   return (
-    <section className="page section">
-      <SectionHeading eyebrow="Pricing" title="Packages that can be edited from the admin dashboard." text="Start with a ready package or request an enterprise quote for custom software, dashboards, and integrations." />
-      <div className="pricing-grid">{plans.map((plan) => <PricingCard key={plan.id} plan={plan} />)}</div>
-    </section>
+    <>
+      <section className="page-hero">
+        <span className="eyebrow">Pricing</span>
+        <h1>Transparent starting points for serious digital growth.</h1>
+        <p>Simple starting packages for websites, mobile apps, SEO, digital marketing, and graphic design.</p>
+      </section>
+      {Object.entries(pricing).map(([category, plans]) => (
+        <section className="section" key={category}>
+          <SectionHeading eyebrow="Plans" title={category} />
+          <div className="card-grid three">{plans.map((plan) => <PricingCard key={plan[0]} plan={plan} />)}</div>
+        </section>
+      ))}
+    </>
   );
 }

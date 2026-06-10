@@ -1,45 +1,72 @@
-import { useEffect, useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import { Menu, Moon, Sun, X } from 'lucide-react';
-
-const nav = [
-  ['Home', '/'],
-  ['About', '/about'],
-  ['Services', '/services'],
-  ['Pricing', '/pricing'],
-  ['Reviews', '/reviews'],
-  ['Clients', '/clients'],
-  ['Contact', '/contact'],
-  ['Order', '/order']
-];
+import { Menu, Phone, X } from "lucide-react";
+import { useState } from "react";
+import { Link, NavLink } from "react-router-dom";
+import { company, navLinks, services } from "../data/seed";
+import { useLanguage } from "../lib/i18n.jsx";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+  const { language, setLanguage, t } = useLanguage();
+  const primaryLinks = navLinks.filter((link) => ["Home", "About", "Portfolio", "Contact"].includes(link.label));
+  const navText = {
+    Home: t.nav.home,
+    About: t.nav.about,
+    Portfolio: t.nav.portfolio,
+    Contact: t.nav.contact
+  };
 
   return (
     <header className="site-header">
       <Link className="brand" to="/" onClick={() => setOpen(false)}>
-        <span>HA</span>
+        <img className="brand-logo" src="/logo.png" alt="HA Developers logo" />
         <strong>HA Developers</strong>
       </Link>
-      <nav className={open ? 'nav open' : 'nav'}>
-        {nav.map(([label, path]) => (
-          <NavLink key={path} to={path} onClick={() => setOpen(false)}>{label}</NavLink>
+
+      <button className="icon-button menu-button" type="button" aria-label="Open menu" onClick={() => setOpen(true)}>
+        <Menu size={21} />
+      </button>
+
+      <nav className={`main-nav ${open ? "is-open" : ""}`}>
+        <button className="icon-button close-button" type="button" aria-label="Close menu" onClick={() => setOpen(false)}>
+          <X size={21} />
+        </button>
+        {primaryLinks.slice(0, 2).map((link) => (
+          <NavLink key={link.path} to={link.path} onClick={() => setOpen(false)}>
+            {navText[link.label] || link.label}
+          </NavLink>
+        ))}
+
+        <div className="nav-dropdown">
+          <NavLink to="/services" onClick={() => setOpen(false)}>{t.nav.services}</NavLink>
+          <div className="dropdown-panel services-panel">
+            {services.map((service) => {
+              const Icon = service.icon;
+              return (
+                <NavLink key={service.id} to={`/services/${service.id}`} onClick={() => setOpen(false)}>
+                  <Icon size={16} />
+                  <span>{service.title}</span>
+                </NavLink>
+              );
+            })}
+          </div>
+        </div>
+
+        {primaryLinks.slice(2).map((link) => (
+          <NavLink key={link.path} to={link.path} onClick={() => setOpen(false)}>
+            {navText[link.label] || link.label}
+          </NavLink>
         ))}
       </nav>
+
       <div className="header-actions">
-        <button className="icon-btn" aria-label="Toggle theme" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
-          {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-        </button>
-        <button className="icon-btn menu-btn" aria-label="Toggle menu" onClick={() => setOpen(!open)}>
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
+        <select className="language-select" value={language} onChange={(event) => setLanguage(event.target.value)} aria-label="Change website language">
+          <option value="en">EN</option>
+          <option value="ur">UR</option>
+          <option value="ar">AR</option>
+        </select>
+        <a className="btn btn-primary" href={`tel:${company.phone}`}>
+          <Phone size={17} /> {t.nav.call}
+        </a>
       </div>
     </header>
   );

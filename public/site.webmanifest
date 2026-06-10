@@ -1,15 +1,1 @@
-{
-  "name": "HA Developers",
-  "short_name": "HA Developers",
-  "description": "Premium websites, Android apps, digital marketing, graphic design, and IT training.",
-  "icons": [
-    {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
-    }
-  ],
-  "theme_color": "#06111f",
-  "background_color": "#06111f",
-  "display": "standalone"
-}
+{"name":"HA Developers","short_name":"HA Developers","start_url":"/","display":"standalone","theme_color":"#07111f","background_color":"#f7fafc","icons":[{"src":"/favicon.svg","sizes":"64x64","type":"image/svg+xml"}]}

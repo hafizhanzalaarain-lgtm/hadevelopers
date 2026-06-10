@@ -1,28 +1,19 @@
-import * as Icons from 'lucide-react';
-import { ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
-export default function ServiceCard({ service, detailed = false }) {
-  const Icon = Icons[service.icon] || Icons.Sparkles;
+export default function ServiceCard({ service }) {
+  const Icon = service.icon;
   return (
     <article className="service-card glass-card">
-      <div className="card-icon"><Icon size={24} /></div>
+      <span className="icon-badge"><Icon size={24} /></span>
       <h3>{service.title}</h3>
-      <p>{service.description}</p>
-      {detailed && (
-        <>
-          <h4>Features</h4>
-          <ul>{service.features?.map((item) => <li key={item}>{item}</li>)}</ul>
-          <h4>Benefits</h4>
-          <ul>{service.benefits?.map((item) => <li key={item}>{item}</li>)}</ul>
-          <strong className="price-line">{service.price}</strong>
-        </>
-      )}
-      <div className="service-actions">
-        <Link className="btn primary full" to={`/order?service=${encodeURIComponent(service.title)}`}>
-          Order Now <ArrowRight size={17} />
-        </Link>
+      <p>{service.summary}</p>
+      <div className="chip-row">
+        {service.subServices.slice(0, 4).map((item) => <span key={item}>{item}</span>)}
       </div>
+      <Link className="inline-link" to={`/services/${service.id}`}>
+        View service <ArrowRight size={16} />
+      </Link>
     </article>
   );
 }
